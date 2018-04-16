@@ -179,44 +179,47 @@ class WarbandManager
         $warbands = get_posts($args);
         $this->add_debug('Warbands Count:' . sizeof($warbands));
         if (sizeof($warbands) >= 1) {
-            $this->warband_data = $warbands[0];
-            $this->warband_id = $this->warband_data->ID;
-            $this->is_owner = true;
+            $this->set_warband($warbands[0]->ID);
+            //$this->is_owner = false;
+            $this->is_wb_member = true;
         } else {
             $this->is_owner = false;
             $user_id = wp_get_current_user()->ID;
             $user_warband_id = get_user_meta($user_id, "leg_char_warband", true);
             if ($user_warband_id > 0) {
-                $user_warband = get_post($user_warband_id);
-                if (isset($user_warband) && $user_warband->post_type == "warband") {
-                    $this->warband_data = $user_warband;
-                    $this->warband_id = $this->warband_data->ID;
-
-                    $this->is_wb_member = true;
-                } else {
-                    $this->is_wb_member = false;
-                }
+                $this->set_warband($user_warband_id);
+                $this->is_wb_member = true;
             } else {
                 $this->is_wb_member = false;
             }
         }
-        $this->add_debug('User Warband ID:' . json_encode ($this->warband_id));
         $this->set_relationship_data();
+    }
+
+    private function set_warband($warband_id){
+        $warband_id = (string) $warband_id;
+        $warband = get_post($warband_id);
+        if (isset($warband) && $warband->post_type == "warband") {
+            $this->warband_data = $warband;
+            $this->warband_id = (int)$this->warband_data->ID;
+        }
     }
 
     private function set_relationship_data()
     {
-        $REGION = "region";
-        $DEITY = "deity";
+        $REGION_NAME = "region";
+        $DEITY_NAME = "deity";
         if ($this->warband_id > 0) {
-            $region = get_the_terms($this->warband_id, $REGION);
-            $this->add_debug('$region:' . json_encode ($region));
+
+            $this->add_debug('User Warband ID: "' . json_encode ($this->warband_id).'"');
+            $region = get_the_terms($this->warband_id, (string)$REGION_NAME);
+//            $this->add_debug('$region:' . json_encode ($region));
             if ($region && !is_wp_error($region)) {
                 $this->warband_region = $region[0]->name;
             }
 
-            $deity = get_the_terms($this->warband_id, $DEITY);
-            $this->add_debug('$deity:' . json_encode ($deity));
+            $deity = get_the_terms($this->warband_id, (string)$DEITY_NAME);
+//            $this->add_debug('$deity:' . json_encode ($deity));
             if ($deity && !is_wp_error($deity)) {
                 $deity_post = get_post($deity[0]->term_id);
                 $this->warband_diety_post = $deity_post;

@@ -42,7 +42,7 @@ get_header(); ?>
                     <h3>Warband Name: <?= $warband_manager->get_warband_title() ?></h3>
                 <?php else : ?>
                     <h2> <?= $warband_manager->get_warband_title() ?> </h2>
-                    <h3>You are a member of this Warband</h3>';
+                    <h3>You are a member of this Warband</h3>
                 <?php endif; ?>
                 <div id="container">
                     <ul class="nav nav-tabs nav-fix" id="wbTabs" role="tablist">
