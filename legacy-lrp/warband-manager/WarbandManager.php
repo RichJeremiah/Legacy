@@ -101,7 +101,6 @@ class WarbandManager
         } else {
             return 'NO DEITY!';
         }
-        return '';
     }
 
     public function get_warband_deity_description()
@@ -134,11 +133,7 @@ class WarbandManager
                 )
             )
         );
-        //$meta_query = new WP_Meta_Query( $meta_query_args );
-//        $args = array(
-//            'meta_key' => 'leg_char_warband_code',
-//            'meta_value' => $this->get_warband_code()
-//        );
+
         $args = array(
             'meta_query' => $meta_query_args
         );
@@ -197,7 +192,6 @@ class WarbandManager
                     $this->warband_data = $user_warband;
                     $this->warband_id = $this->warband_data->ID;
 
-                    $this->add_debug('User Warband:' . json_encode ($this->warband_id));
                     $this->is_wb_member = true;
                 } else {
                     $this->is_wb_member = false;
@@ -206,18 +200,23 @@ class WarbandManager
                 $this->is_wb_member = false;
             }
         }
+        $this->add_debug('User Warband ID:' . json_encode ($this->warband_id));
         $this->set_relationship_data();
     }
 
     private function set_relationship_data()
     {
+        $REGION = "region";
+        $DEITY = "deity";
         if ($this->warband_id > 0) {
-            $region = get_the_terms($this->warband_id, 'region');
+            $region = get_the_terms($this->warband_id, $REGION);
+            $this->add_debug('$region:' . json_encode ($region));
             if ($region && !is_wp_error($region)) {
                 $this->warband_region = $region[0]->name;
             }
 
-            $deity = get_the_terms($this->warband_id, 'deity');
+            $deity = get_the_terms($this->warband_id, $DEITY);
+            $this->add_debug('$deity:' . json_encode ($deity));
             if ($deity && !is_wp_error($deity)) {
                 $deity_post = get_post($deity[0]->term_id);
                 $this->warband_diety_post = $deity_post;
@@ -227,6 +226,7 @@ class WarbandManager
 
     public static function set_user_approved()
     {
+        if (!$_POST) return;
         $userId = $_POST['userId'];
         $wb_code = $_POST['wbcode'];
         $wb_id = $_POST['wbid'];
@@ -249,6 +249,7 @@ class WarbandManager
 
     public static function set_user_rejected()
     {
+        if (!$_POST) return;
         $userId = $_POST["userId"];
         $email = "";
         $existing_approvals = get_user_meta($userId, 'leg_char_wb_approve');
@@ -306,13 +307,14 @@ class WarbandManager
 
     public static function set_warband_member_public()
     {
+        if (!$_POST) return;
         $wb_id = $_POST['wbid'];
         $wb_name = $_POST['wbname'];
         $wb_code = get_post_meta($wb_id, 'leg_wb_code', true);
         //If there isn't a Warband code then it will need one
         $wb_code_response = true;
         if (!isset($wb_code) || trim($wb_code) === '') {
-            $wb_code = PageTemplater::generate_warband_code($wb_id, $wb_name);
+            $wb_code = WarbandForm::generate_warband_code($wb_id, $wb_name);
             $wb_code_response = update_post_meta($wb_id, 'leg_wb_code', $wb_code);
         }
         $response = 0;
@@ -341,7 +343,7 @@ class WarbandManager
         //If there isn't a Warband code then it will need one
         $wb_code_response = true;
         if (!isset($wb_code) || trim($wb_code) === '') {
-            $wb_code = PageTemplater::generate_warband_code($wb_id, $wb_name);
+            $wb_code = WarbandForm::generate_warband_code($wb_id, $wb_name);
             $wb_code_response = update_post_meta($wb_id, 'leg_wb_code', $wb_code);
         }
         $response = 0;
@@ -364,41 +366,41 @@ class WarbandManager
 
     public static function initialise_plugin()
     {
-        if (is_plugin_active('advanced-custom-fields/acf.php')) {
-            //plugin is activated
-            //does Warband Manager page exist?
-            $args = array(
-                'nopaging' => true,
-                'post_type' => 'acf',
-                'post_status' => 'publish',
-                'post_title' => 'Warband Manager',
-                'post_name' => 'acf_warband-manager',
-            );
-            $acf_template = get_posts($args);
-            if (count($acf_template) > 0) {
-                //if it exists, grab the ID
-                $acf_post_id = $acf_template->ID;
-            } else {
-                //create it
-                $fields = array(
-                    'post_type' => 'acf',
-                    'post_status' => 'publish',
-                    'post_title' => 'Warband Manager',
-                    'post_name' => 'acf_warband-manager',
-                    'post_status' => 'publish',
-                    'comment_status' => 'closed',
-                    'ping_status' => 'closed',
-                );
-                $acf_post_id = wp_insert_post($fields, false);
-            }
-
-            if ($acf_post_id > 0) {
-                //post exists (or does now).  Time to validate/create the meta fields
-
-            }
-        } else {
-            //ACF NEEDED - please install!
-        }
+//        if (is_plugin_active('advanced-custom-fields/acf.php')) {
+//            //plugin is activated
+//            //does Warband Manager page exist?
+//            $args = array(
+//                'nopaging' => true,
+//                'post_type' => 'acf',
+//                'post_status' => 'publish',
+//                'post_title' => 'Warband Manager',
+//                'post_name' => 'acf_warband-manager',
+//            );
+//            $acf_template = get_posts($args);
+//            if (count($acf_template) > 0) {
+//                //if it exists, grab the ID
+//                $acf_post_id = $acf_template->ID;
+//            } else {
+//                //create it
+//                $fields = array(
+//                    'post_type' => 'acf',
+//                    'post_status' => 'publish',
+//                    'post_title' => 'Warband Manager',
+//                    'post_name' => 'acf_warband-manager',
+//                    'post_status' => 'publish',
+//                    'comment_status' => 'closed',
+//                    'ping_status' => 'closed',
+//                );
+//                $acf_post_id = wp_insert_post($fields, false);
+//            }
+//
+//            if ($acf_post_id > 0) {
+//                //post exists (or does now).  Time to validate/create the meta fields
+//
+//            }
+//        } else {
+//            //ACF NEEDED - please install!
+//        }
 
     }
 }

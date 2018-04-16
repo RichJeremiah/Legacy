@@ -95,23 +95,22 @@ class Legacy_LRP_Page_Template_Loader {
 			'warband-submission-form-template.php' => __( 'Warband Submission Form', $this->plugin_slug ),
 			'warband-manager-template.php' => __( 'Warband Manager', $this->plugin_slug )
 		);
-//        $this->templates = array(
-//            // 'goodtobebad-template.php' => 'It\'s Good to Be Bad',
-//            'warband-submission-form-template.php' => 'Warband Submission Form',
-//            'warband-manager-template.php' => 'Warband Manager'
-//        );
+
 		// adding support for theme templates to be merged and shown in dropdown
 		$templates = wp_get_theme()->get_page_templates();
-		$templates = array_merge( $templates, $this->templates );
-
-        add_action('wp_ajax_check_warband_name', array('PageTemplater', 'check_warband_name'));
-        add_action('wp_ajax_nopriv_check_warband_name', array('PageTemplater', 'check_warband_name'));
-        add_action('wp_ajax_set_user_approved', array('WarbandManager', 'set_user_approved'));
-        add_action('wp_ajax_set_user_rejected', array('WarbandManager', 'set_user_rejected'));
-        add_action('wp_ajax_set_warband_membership_public', array('WarbandManager', 'set_warband_member_public'));
-        add_action('wp_ajax_set_warband_membership_private', array('WarbandManager', 'set_warband_member_private'));
+		$this->templates = array_merge( $templates, $this->templates );
+        add_filter(
+            'theme_page_templates', array($this, 'add_new_template')
+        );
+        // Add a filter to the attributes metabox to inject template into the cache.
 
 	} // end constructor
+
+    public function add_new_template($posts_templates)
+    {
+        $posts_templates = array_merge($posts_templates, $this->templates);
+        return $posts_templates;
+    }
 
     /**
      * Load the plugin text domain for translation.

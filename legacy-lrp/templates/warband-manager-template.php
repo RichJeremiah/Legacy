@@ -1,27 +1,19 @@
 <?php
 /**
- * Template Name: WarbandManager
+ * Template Name: Warband Manager
  * Created by PhpStorm.
  * User: Richard
  * Date: 25/01/2018
  * Time: 17:07
  */
-require_once('WarbandManager.php');
+require_once(dirname(__DIR__).'/warband-manager/WarbandManager.php');
 $warband_manager = WarbandManager::get_instance();
 get_header(); ?>
 
 <div id="primary" class="content-area">
     <div id="main" class="site-main" role="main">
-        <link rel="stylesheet"
-              href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-              crossorigin="anonymous">
-        <link rel="stylesheet" id="nivoslider-theme-bar-css"
-              href="<?php echo get_option('siteurl') ?>/wp-content/plugins/nivo-slider-lite/assets/themes/bar/bar.css?ver=2.1.0"
-              type="text/css" media="all">
-        <link rel="stylesheet" id="nivo-ns-nivoslider-css"
-              href="<?php echo get_option('siteurl') ?>/wp-content/plugins/nivo-slider-lite/assets/css/nivo-slider.css?ver=2.1.0"
-              type="text/css" media="all">
+        <?php include dirname(__FILE__).'/common/includes/bootstrap-links.html' ?>
+<!--        --><?php //include '../common/includes/nivo-slider-links.html' ?>
         <link rel="stylesheet" id="warband-styles"
               href="<?php echo get_option('siteurl') ?>/wp-content/plugins/legacy-lrp/css/warband-manager.css"
               type="text/css" media="all">
@@ -74,26 +66,29 @@ get_header(); ?>
                         <?php endif; ?>
                     </ul>
                     <div class="tab-content" id="wbTabContent">
-                        <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="warband-tab">
+                        <div class="tab-pane fade show active" id="warband" role="tabpanel" aria-labelledby="warband-tab">
                             <div id="wb-content-1" class="panel container-fluid">
-                                Panel one
+                                <?php include dirname(__DIR__).'/warband-manager/includes/warband-info.php' ?>
                             </div>
                         </div>
-                        <div class="tab-pane fade " id="info" role="tabpanel" aria-labelledby="deity-tab">
+                        <div class="tab-pane fade " id="deity" role="tabpanel" aria-labelledby="deity-tab">
                             <div id="wb-content-2" class="panel container-fluid">
-                                Panel 2
+
+                                <?php include dirname(__DIR__).'/warband-manager/includes/deity-info.php' ?>
                             </div>
                         </div>
                         <?php if ($warband_manager->is_warband_owner()) : ?>
                             <div class="tab-pane fade" id="membership" role="tabpanel" aria-labelledby="membership-tab">
                                 <div id="wb-content-3" class="panel container-fluid">
-                                    Panel 3
+
+                                    <?php include dirname(__DIR__).'/warband-manager/includes/membership-info.php' ?>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="settlements" role="tabpanel"
                                  aria-labelledby="settlements-tab">
                                 <div id="wb-content-4" class="panel container-fluid">
-                                    Panel 4
+
+                                    <?php include dirname(__DIR__).'/warband-manager/includes/settlement-info.php' ?>
                                 </div>
                             </div>
                         <?php endif; ?>

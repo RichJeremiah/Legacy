@@ -11,7 +11,7 @@ class WarbandForm
     public static function check_warband_name()
     {
         if (isset($_POST['warband_name'])) {
-            if (PageTemplater::is_warband_name_taken($_POST['warband_name'])) {
+            if (WarbandForm::is_warband_name_taken($_POST['warband_name'])) {
                 die("exists");
             } else {
                 die("");
@@ -88,7 +88,7 @@ class WarbandForm
 
             $new_wb_id = pods('warband')->add($fields);
             if ($new_wb_id) {
-                $leg_wb_code = PageTemplater::generate_warband_code($new_wb_id, $warband_name);
+                $leg_wb_code = WarbandForm::generate_warband_code($new_wb_id, $warband_name);
                 echo $leg_wb_code;
                 update_post_meta($new_wb_id, 'leg_wb_code', $leg_wb_code);
                 $warband_region = sanitize_text_field($_POST['warband-region']);
@@ -134,6 +134,7 @@ class WarbandForm
                 exit();
 
             }
+            return;
         }
     }
 }
