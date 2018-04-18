@@ -10,7 +10,6 @@ get_header(); ?>
     <div id="primary" class="content-area">
         <main id="main" class="site-main" role="main">
             <?php include dirname(__FILE__).'/common/includes/bootstrap-links.html' ?>
-            <!--            --><?php //include './common/includes/nivo-slider-links.html' ?>
 
             <?php while (have_posts()) :
                 the_post();

@@ -180,8 +180,7 @@ class WarbandManager
         $this->add_debug('Warbands Count:' . sizeof($warbands));
         if (sizeof($warbands) >= 1) {
             $this->set_warband($warbands[0]->ID);
-            //$this->is_owner = false;
-            $this->is_wb_member = true;
+            $this->is_owner = true;
         } else {
             $this->is_owner = false;
             $user_id = wp_get_current_user()->ID;
@@ -213,13 +212,11 @@ class WarbandManager
 
             $this->add_debug('User Warband ID: "' . json_encode ($this->warband_id).'"');
             $region = get_the_terms($this->warband_id, (string)$REGION_NAME);
-//            $this->add_debug('$region:' . json_encode ($region));
             if ($region && !is_wp_error($region)) {
                 $this->warband_region = $region[0]->name;
             }
 
             $deity = get_the_terms($this->warband_id, (string)$DEITY_NAME);
-//            $this->add_debug('$deity:' . json_encode ($deity));
             if ($deity && !is_wp_error($deity)) {
                 $deity_post = get_post($deity[0]->term_id);
                 $this->warband_diety_post = $deity_post;
